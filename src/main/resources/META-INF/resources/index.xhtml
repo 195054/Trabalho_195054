@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Biblioteca Digital</title>
+    <meta charset="UTF-8"/>
+    <h:outputStylesheet>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f5f6fa;
+            margin: 20px;
+        }
+        .painel-topo {
+            display: flex;
+            gap: 20px;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        .painel-topo .card {
+            background: #2e308d;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 22%;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .titulo {
+            text-align: center;
+            color: #2e308d;
+            margin-bottom: 25px;
+        }
+    </h:outputStylesheet>
+</h:head>
+
+<h:body>
+<h:form id="formPrincipal">
+    <h1 class="titulo">📚 Biblioteca Digital</h1>
+
+    <!-- === Estatísticas === -->
+    <div class="painel-topo">
+        <div class="card">
+            <h3>Total de Livros</h3>
+            <h2>#{bibliotecaBean.totalLivros}</h2>
+        </div>
+        <div class="card">
+            <h3>Livros Disponíveis</h3>
+            <h2>#{bibliotecaBean.livrosDisponiveis}</h2>
+        </div>
+        <div class="card">
+            <h3>Autores Cadastrados</h3>
+            <h2>#{bibliotecaBean.totalAutores}</h2>
+        </div>
+        <div class="card">
+            <h3>Empréstimos Ativos</h3>
+            <h2>#{bibliotecaBean.emprestimosAtivosCount}</h2>
+        </div>
+    </div>
+
+    <p:messages id="msgs" autoUpdate="true" closable="true" globalOnly="true"/>
+
+    <!-- === Aba Principal === -->
+    <p:tabView>
+        <!-- ==================== AUTORES ==================== -->
+        <p:tab title="Autores">
+            <h:panelGroup>
+                <p:commandButton value="Novo Autor" icon="pi pi-user-plus"
+                                 actionListener="#{bibliotecaBean.novoAutorDialog}"
+                                 oncomplete="PF('dlgAutor').show()" styleClass="p-button-success"/>
+
+                <p:dataTable value="#{bibliotecaBean.autores}" var="a" paginator="true" rows="10"
+                             style="margin-top:15px" emptyMessage="Nenhum autor encontrado.">
+                    <p:column headerText="ID" width="5%">#{a.id}</p:column>
+                    <p:column headerText="Nome">#{a.nome}</p:column>
+                    <p:column headerText="Email">#{a.email}</p:column>
+                    <p:column headerText="Livros Publicados" width="15%">#{a.livros.size()}</p:column>
+                    <p:column headerText="Ações" width="10%">
+                        <p:commandButton icon="pi pi-trash" title="Excluir"
+                                         actionListener="#{bibliotecaBean.excluirAutor(a.id)}"
+                                         update="@form" styleClass="p-button-danger p-button-sm"/>
+                    </p:column>
+                </p:dataTable>
+            </h:panelGroup>
+        </p:tab>
+
+        <!-- ==================== LIVROS ==================== -->
+        <p:tab title="Livros">
+            <h:panelGrid columns="2" cellpadding="5">
+                <h:outputLabel value="Filtrar por título/autor:"/>
+                <p:inputText value="#{bibliotecaBean.filtro}" placeholder="Buscar..."
+                             style="width:250px" onkeyup="PF('tabelaLivros').filter()"/>
+            </h:panelGrid>
+
+            <p:commandButton value="Novo Livro" icon="pi pi-book"
+                             actionListener="#{bibliotecaBean.novoLivroDialog}"
+                             oncomplete="PF('dlgLivro').show()" style="margin-top:10px"/>
+
+            <p:dataTable id="tabelaLivros" var="l"
+                         value="#{bibliotecaBean.livrosFiltrados}"
+                         paginator="true" rows="10"
+                         style="margin-top:15px" emptyMessage="Nenhum livro encontrado.">
+
+                <p:column headerText="ID" width="5%">#{l.id}</p:column>
+                <p:column headerText="Título">#{l.titulo}</p:column>
+                <p:column headerText="Autor">#{l.autor.nome}</p:column>
+                <p:column headerText="Disponível" width="10%">
+                    <p:tag severity="#{l.disponivel ? 'success' : 'danger'}"
+                           value="#{l.disponivel ? 'Sim' : 'Não'}"/>
+                </p:column>
+                <p:column headerText="Ações" width="10%">
+                    <p:commandButton icon="pi pi-trash" title="Excluir"
+                                     actionListener="#{bibliotecaBean.excluirLivro(l.id)}"
+                                     update="@form" styleClass="p-button-danger p-button-sm"/>
+                </p:column>
+            </p:dataTable>
+        </p:tab>
+
+        <!-- ==================== EMPRÉSTIMOS ==================== -->
+        <p:tab title="Empréstimos Ativos">
+            <p:dataTable value="#{bibliotecaBean.emprestimosAtivos}" var="e"
+                         paginator="true" rows="10" style="margin-top:15px"
+                         emptyMessage="Nenhum empréstimo ativo.">
+
+                <p:column headerText="Usuário">#{e.nomeUsuario}</p:column>
+                <p:column headerText="Livro">#{e.livro.titulo}</p:column>
+                <p:column headerText="Prevista">#{e.dataDevolucaoPrevista}</p:column>
+                <p:column headerText="Dias em atraso">
+                    #{bibliotecaBean.getDiasAtraso(e)}
+                </p:column>
+                <p:column headerText="Multa (R$)">
+                    #{bibliotecaBean.getMulta(e)}
+                </p:column>
+            </p:dataTable>
+        </p:tab>
+    </p:tabView>
+
+
+    <p:dialog header="Novo Autor" widgetVar="dlgAutor" modal="true" width="400">
+        <p:messages id="msgAutor" autoUpdate="true" closable="true"/>
+
+        <h:panelGrid columns="2" cellpadding="5">
+            <h:outputLabel value="Nome:"/>
+            <p:inputText value="#{bibliotecaBean.novoAutor.nome}" 
+                         required="true" 
+                         requiredMessage="O nome do autor é obrigatório."
+                         validateClient="true"/>
+
+            <h:outputLabel value="Email:"/>
+            <p:inputText value="#{bibliotecaBean.novoAutor.email}"/>
+
+            <h:outputLabel value="Biografia:"/>
+            <p:inputTextarea value="#{bibliotecaBean.novoAutor.biografia}" rows="3" cols="20"/>
+        </h:panelGrid>
+
+        <f:facet name="footer">
+            <p:commandButton value="Salvar" icon="pi pi-check"
+                            action="#{bibliotecaBean.salvarAutor}"
+                            process="@form"
+                            update=":formPrincipal"
+                            oncomplete="PF('dlgAutor').hide()"/>
+
+
+            <p:commandButton value="Cancelar" icon="pi pi-times"
+                             onclick="PF('dlgAutor').hide()" type="button"/>
+        </f:facet>
+    </p:dialog>
+
+
+    <p:dialog header="Novo Livro" widgetVar="dlgLivro" modal="true" width="400">
+        <p:messages id="msgLivro" autoUpdate="true" closable="true"/>
+
+        <h:panelGrid columns="2" cellpadding="5">
+            <h:outputLabel value="Título:"/>
+            <p:inputText value="#{bibliotecaBean.novoLivro.titulo}" 
+                         required="true" 
+                         requiredMessage="O título do livro é obrigatório."
+                         validateClient="true"/>
+
+            <h:outputLabel value="ISBN:"/>
+            <p:inputText value="#{bibliotecaBean.novoLivro.isbn}"/>
+
+            <h:outputLabel value="Autor:"/>
+            <p:selectOneMenu value="#{bibliotecaBean.idAutorSelecionado}" style="width:100%"
+                             required="true" requiredMessage="Selecione um autor.">
+                <f:selectItem itemLabel="Selecione" itemValue="#{null}"/>
+                <f:selectItems value="#{bibliotecaBean.autores}" var="a"
+                               itemLabel="#{a.nome}" itemValue="#{a.id}"/>
+            </p:selectOneMenu>
+        </h:panelGrid>
+
+        <f:facet name="footer">
+            <p:commandButton value="Salvar" icon="pi pi-check"
+                             actionListener="#{bibliotecaBean.salvarLivro}"
+                             update="@form,msgLivro"
+                             oncomplete="if (!args.validationFailed) PF('dlgLivro').hide()"/>
+            <p:commandButton value="Cancelar" icon="pi pi-times"
+                             onclick="PF('dlgLivro').hide()" type="button"/>
+        </f:facet>
+    </p:dialog>
+
+</h:form>
+</h:body>
+</html>
