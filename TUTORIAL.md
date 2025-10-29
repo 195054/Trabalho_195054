@@ -24,7 +24,7 @@ Dialog criado por mim de exemplo:
         <p:commandButton value="Salvar" icon="pi pi-check"
                          action="#{bibliotecaBean.salvarAutor}"
                          process="@form"
-                         update=":formPrincipal"
+                         org.primefaces.PrimeFaces.current().ajax().update("formPrincipal");
                          oncomplete="PF('dlgAutor').hide()"/>
         <p:commandButton value="Cancelar" icon="pi pi-times"
                          onclick="PF('dlgAutor').hide()" type="button"/>
@@ -37,7 +37,7 @@ widgetVar="dlgAutor": nome JavaScript do modal (usado para abrir/fechar).
 modal="true": bloqueia a tela de fundo enquanto o diálogo está aberto.
 p:messages: exibe mensagens de sucesso ou erro.
 process="@form": processa apenas os campos do modal.
-update=":formPrincipal": recarrega toda a tabela principal de autores.
+org.primefaces.PrimeFaces.current().ajax().update("formPrincipal"): recarrega toda a tabela principal de autores.
 oncomplete: executa o JS para fechar o modal depois do Ajax.
 
 
