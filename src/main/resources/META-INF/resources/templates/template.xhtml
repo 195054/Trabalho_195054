@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title><ui:insert name="title">Biblioteca Digital</ui:insert></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background-color: #f5f6fa;
+        }
+        #header {
+            background-color: #2e308d;
+            color: white;
+            padding: 15px;
+        }
+        #header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        .nav-link {
+            color: white;
+            margin-right: 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .nav-link:hover { text-decoration: underline; }
+        #content { padding: 25px; }
+        #footer {
+            text-align: center;
+            color: gray;
+            padding: 15px;
+            margin-top: 30px;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div id="header">
+        <h1>📚 Sistema de Biblioteca Digital</h1>
+        <h:link value="Dashboard" outcome="index.xhtml" styleClass="nav-link"/>
+        <h:link value="Autores" outcome="autores.xhtml" styleClass="nav-link"/>
+        <h:link value="Livros" outcome="livros.xhtml" styleClass="nav-link"/>
+        <h:link value="Empréstimos" outcome="emprestimos.xhtml" styleClass="nav-link"/>
+    </div>
+
+    <div id="content">
+        <ui:insert name="content"/>
+    </div>
+
+    <div id="footer">
+        <p>© 2025 - Biblioteca Digital</p>
+    </div>
+</h:body>
+</html>

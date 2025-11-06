@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>Biblioteca Digital</title>
+    <meta charset="UTF-8"/>
+    <style>
+        /* ---------- BASE ---------- */
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #eef1f8;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .titulo {
+            text-align: center;
+            color: #2e308d;
+            margin-bottom: 40px;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* ---------- PAINEL DE CARDS ---------- */
+        .painel-topo {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: linear-gradient(160deg, #2e308d, #3a3dbf);
+            color: white;
+            padding: 25px;
+            border-radius: 16px;
+            width: 260px;
+            text-align: center;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.25);
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 500;
+            opacity: 0.85;
+        }
+
+        .card h2 {
+            margin: 10px 0 0;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        /* ---------- BOTÕES ---------- */
+        .nav-btns {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .p-button {
+            border-radius: 10px !important;
+            padding: 0.6rem 1.4rem !important;
+            font-weight: 600 !important;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s ease !important;
+        }
+
+        .p-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .p-button-info {
+            background: linear-gradient(90deg, #3a86ff, #2e308d) !important;
+            border: none !important;
+        }
+
+        .p-button-info:focus {
+            outline: 2px solid #d0e1ff !important;
+            outline-offset: 2px;
+        }
+
+        /* ---------- RODAPÉ ---------- */
+        footer {
+            text-align: center;
+            color: #6b6b6b;
+            margin-top: 40px;
+            font-size: 0.9rem;
+        }
+
+        /* ---------- RESPONSIVO ---------- */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            .painel-topo {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .card {
+                width: 80%;
+            }
+
+            .nav-btns {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <h:form id="formPrincipal">
+        <h1 class="titulo">Biblioteca Digital</h1>
+
+        <div class="painel-topo">
+            <div class="card">
+                <h3>Total de Livros</h3>
+                <h2>#{bibliotecaBean.totalLivros}</h2>
+            </div>
+
+            <div class="card">
+                <h3>Livros Disponíveis</h3>
+                <h2>#{bibliotecaBean.livrosDisponiveis}</h2>
+            </div>
+
+            <div class="card">
+                <h3>Autores Cadastrados</h3>
+                <h2>#{bibliotecaBean.totalAutores}</h2>
+            </div>
+
+            <div class="card">
+                <h3>Empréstimos Ativos</h3>
+                <h2>#{bibliotecaBean.emprestimosAtivosCount}</h2>
+            </div>
+        </div>
+
+        <div class="nav-btns">
+            <p:commandButton value="Autores" icon="pi pi-users" 
+                             action="autores.xhtml?faces-redirect=true"
+                             styleClass="p-button p-button-info"/>
+            <p:commandButton value="Livros" icon="pi pi-book" 
+                             action="livros.xhtml?faces-redirect=true"
+                             styleClass="p-button p-button-info"/>
+            <p:commandButton value="Empréstimos Ativos" icon="pi pi-clock" 
+                             action="emprestimos.xhtml?faces-redirect=true"
+                             styleClass="p-button p-button-info"/>
+        </div>
+
+        <footer>
+            © 2025 Biblioteca Digital — Desenvolvido por Guilherme Santos
+        </footer>
+    </h:form>
+</h:body>
+</html>
