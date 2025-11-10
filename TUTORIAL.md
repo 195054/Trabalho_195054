@@ -151,7 +151,12 @@ public class BibliotecaBean implements Serializable {
 ```
 
 
+### Resultado em tela
 
+<p align="center">
+  <img src="image.png" width="400">
+  <img src="image-1.png" width="400">
+</p>
 
 
 
@@ -184,5 +189,7 @@ Referências
 1. [PrimeFaces — Dialog Component](https://primefaces.github.io/primefaces/13_0_0/#/components/dialog)
 2. [Jakarta Faces Specification](https://jakarta.ee/specifications/faces/)
 3. [PrimeFaces Showcase — Dialogs](https://www.primefaces.org/showcase)
+
+
 
 
