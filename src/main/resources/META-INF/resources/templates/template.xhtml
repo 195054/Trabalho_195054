@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title><ui:insert name="title">Biblioteca Digital</ui:insert></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background-color: #f5f6fa;
+        }
+
+        #header {
+            background-color: #2e308d;
+            color: white;
+            padding: 15px 25px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        #header h1 {
+            margin: 0;
+            font-size: 1.7rem;
+            font-weight: 600;
+        }
+
+        .menu-container {
+            margin-top: 6px;
+        }
+
+        .nav-link {
+            color: white;
+            margin-right: 18px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            text-decoration: underline;
+        }
+
+        #content {
+            padding: 30px;
+        }
+
+        #footer {
+            text-align: center;
+            color: #666;
+            padding: 15px;
+            margin-top: 40px;
+            font-size: 0.9rem;
+        }
+    </style>
+</h:head>
+
+<h:body>
+
+    <!-- Cabeçalho -->
+    <div id="header">
+
+        <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+
+            <!-- Título + Menu -->
+            <div>
+                <h1>Sistema de Biblioteca Digital</h1>
+
+                <div class="menu-container">
+                    <h:link value="Dashboard" outcome="/index.xhtml" styleClass="nav-link"/>
+                    <h:link value="Autores" outcome="/autores.xhtml" styleClass="nav-link"/>
+                    <h:link value="Livros" outcome="/livros.xhtml" styleClass="nav-link"/>
+
+                    <!-- Itens visíveis apenas para ADMIN -->
+                    <h:panelGroup rendered="#{bibliotecaBean.admin}">
+                        <h:link value="Empréstimos" outcome="/emprestimos.xhtml" styleClass="nav-link"/>
+                        <h:link value="Cadastro de Livros" outcome="/admin/cadastro.xhtml" styleClass="nav-link"/>
+                    </h:panelGroup>
+                </div>
+            </div>
+
+            <!-- Informações do usuário -->
+            <div style="text-align:right;">
+                <div style="font-size:0.95rem;">
+                    Usuário: <strong><h:outputText value="#{bibliotecaBean.usuarioLogado}" /></strong>
+                </div>
+
+                <h:form>
+                    <h:commandLink value="Sair"
+                                   action="#{bibliotecaBean.logout}"
+                                   style="color:white; text-decoration:underline; margin-top:4px; display:inline-block;"/>
+                </h:form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Conteúdo dinâmico das páginas -->
+    <div id="content">
+        <ui:insert name="content"/>
+    </div>
+
+    <!-- Rodapé -->
+    <div id="footer">
+        © 2025 - Biblioteca Digital
+    </div>
+
+</h:body>
+</html>

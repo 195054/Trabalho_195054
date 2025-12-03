@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="title">Empréstimos Ativos</ui:define>
+
+    <ui:define name="content">
+        <style>
+            .titulo-pagina {
+                text-align: center;
+                color: #2e308d;
+                font-size: 2rem;
+                font-weight: 700;
+                margin-bottom: 30px;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+            }
+
+            .painel-topo {
+                display: flex;
+                justify-content: center;
+                gap: 30px;
+                flex-wrap: wrap;
+                margin-bottom: 40px;
+            }
+
+            .card {
+                background: linear-gradient(160deg, #2e308d, #3b41c5);
+                color: white;
+                padding: 25px;
+                border-radius: 16px;
+                width: 260px;
+                text-align: center;
+                box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+            }
+
+            .card h3 {
+                margin: 0;
+                font-size: 1.05rem;
+                font-weight: 500;
+                opacity: 0.9;
+            }
+
+            .card h2 {
+                margin-top: 8px;
+                font-size: 2rem;
+                font-weight: 700;
+            }
+
+            .tabela-emprestimos {
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+                font-size: 0.95rem;
+            }
+
+            .status-ativo {
+                color: #27ae60;
+                font-weight: 600;
+            }
+
+            .status-pendente {
+                color: #f39c12;
+                font-weight: 600;
+            }
+
+            .status-devolvido {
+                color: #c0392b;
+                font-weight: 600;
+            }
+
+            .voltar-btn {
+                display: inline-block;
+                color: #2e308d;
+                font-weight: 600;
+                text-decoration: none;
+                margin-top: 30px;
+                transition: 0.2s;
+            }
+
+            .voltar-btn:hover {
+                color: #3b41c5;
+                text-decoration: underline;
+            }
+
+            @media (max-width: 768px) {
+                .painel-topo {
+                    flex-direction: column;
+                    align-items: center;
+                }
+                .card {
+                    width: 80%;
+                }
+            }
+        </style>
+
+        <h2 class="titulo-pagina">📚 Empréstimos Ativos</h2>
+
+        <div class="painel-topo">
+            <div class="card">
+                <h3>Empréstimos Ativos</h3>
+                <h2>#{bibliotecaBean.emprestimosAtivosCount}</h2>
+            </div>
+            <div class="card">
+                <h3>Livros Disponíveis</h3>
+                <h2>#{bibliotecaBean.livrosDisponiveis}</h2>
+            </div>
+        </div>
+
+        <h:form id="formEmprestimos">
+            <div style="text-align:right; margin-bottom:15px;">
+                <p:commandButton value="Novo Empréstimo" icon="pi pi-plus-circle"
+                                 actionListener="#{bibliotecaBean.novoEmprestimoDialog}"
+                                 oncomplete="PF('dlgEmprestimo').show()"
+                                 styleClass="p-button-success"
+                                 rendered="#{bibliotecaBean.admin}"/>
+            </div>
+
+            <p:dataTable id="tabelaEmprestimos"
+                         value="#{bibliotecaBean.emprestimosAtivos}"
+                         var="e"
+                         paginator="true"
+                         rows="5"
+                         rowsPerPageTemplate="5,10,20"
+                         paginatorPosition="bottom"
+                         styleClass="tabela-emprestimos"
+                         stripedRows="true"
+                         resizableColumns="true"
+                         rowHover="true"
+                         responsiveLayout="scroll"
+                         emptyMessage="Nenhum empréstimo ativo encontrado.">
+
+                <p:column headerText="Usuário" sortBy="#{e.nomeUsuario}">
+                    <h:outputText value="#{e.nomeUsuario}" />
+                </p:column>
+
+                <p:column headerText="Livro" sortBy="#{e.livro.titulo}">
+                    <h:outputText value="#{e.livro.titulo}" />
+                </p:column>
+
+                <p:column headerText="Data Empréstimo" sortBy="#{e.dataEmprestimo}">
+                    <h:outputText value="#{e.dataEmprestimo}" />
+                </p:column>
+
+                <p:column headerText="Devolução Prevista" sortBy="#{e.dataDevolucaoPrevista}">
+                    <h:outputText value="#{e.dataDevolucaoPrevista}" />
+                </p:column>
+
+                <p:column headerText="Status" sortBy="#{e.status}">
+                    <h:outputText value="#{e.status}"
+                                  styleClass="#{e.status eq 'PENDENTE' ? 'status-pendente' : (e.status eq 'APROVADO' ? 'status-ativo' : 'status-devolvido')}" />
+                </p:column>
+
+                <p:column headerText="Ações" style="width:160px;" rendered="#{bibliotecaBean.admin}">
+                    <p:commandButton icon="pi pi-check" title="Aprovar"
+                                     rendered="#{e.status eq 'PENDENTE'}"
+                                     actionListener="#{bibliotecaBean.aprovarEmprestimo(e)}"
+                                     update="tabelaEmprestimos"
+                                     styleClass="p-button-rounded p-button-success p-mr-2"/>
+                    <p:commandButton icon="pi pi-times" title="Rejeitar"
+                                     rendered="#{e.status eq 'PENDENTE'}"
+                                     actionListener="#{bibliotecaBean.rejeitarEmprestimo(e)}"
+                                     update="tabelaEmprestimos"
+                                     styleClass="p-button-rounded p-button-danger p-mr-2"
+                                     onclick="return confirm('Deseja rejeitar esta solicitação de empréstimo?')"/>
+
+                    <p:commandButton icon="pi pi-undo" title="Registrar devolução"
+                                     rendered="#{e.status eq 'APROVADO'}"
+                                     actionListener="#{bibliotecaBean.devolverEmprestimo(e)}"
+                                     update="tabelaEmprestimos"
+                                     styleClass="p-button-rounded p-button-warning p-mr-2"/>
+
+                    <p:commandButton icon="pi pi-trash" title="Excluir"
+                                     actionListener="#{bibliotecaBean.excluirEmprestimo(e.id)}"
+                                     update="tabelaEmprestimos"
+                                     styleClass="p-button-rounded p-button-danger"
+                                     onclick="return confirm('Tem certeza que deseja excluir este empréstimo?')"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <!-- MODAL -->
+        
+<p:dialog header="Cadastro de Empréstimo" widgetVar="dlgEmprestimo" modal="true" width="450"
+          closable="true" resizable="false" style="border-radius:12px;">
+    <h:form id="dlgEmprestimoForm">
+        <p:messages id="msgEmprestimo" autoUpdate="true" closable="true"/>
+
+        <h:panelGrid columns="2" cellpadding="6" style="width:100%;">
+            <h:outputLabel for="usuarioEmp" value="Usuário:"/>
+            <p:inputText id="usuarioEmp"
+                         value="#{bibliotecaBean.novoEmprestimo.nomeUsuario}"
+                         required="true"
+                         placeholder="Nome do usuário"
+                         style="width:100%;"/>
+
+            <h:outputLabel for="livroEmp" value="Livro:"/>
+            <p:selectOneMenu id="livroEmp"
+                             value="#{bibliotecaBean.novoEmprestimo.livro}"
+                             style="width:100%;">
+                <f:selectItem itemLabel="Selecione um livro" itemValue="#{null}" noSelectionOption="true"/>
+                <f:selectItems value="#{bibliotecaBean.livros}" var="l"
+                               itemLabel="#{l.titulo}" itemValue="#{l}"/>
+            </p:selectOneMenu>
+
+            <h:outputLabel for="dataEmp" value="Data Empréstimo:"/>
+            <p:datePicker id="dataEmp"
+                          value="#{bibliotecaBean.novoEmprestimo.dataEmprestimo}"
+                          pattern="dd/MM/yyyy"
+                          showIcon="true"/>
+
+            <h:outputLabel for="dataDev" value="Devolução Prevista:"/>
+            <p:datePicker id="dataDev"
+                          value="#{bibliotecaBean.novoEmprestimo.dataDevolucaoPrevista}"
+                          pattern="dd/MM/yyyy"
+                          showIcon="true"/>
+        </h:panelGrid>
+
+        <div style="text-align:right; padding-top:10px;">
+            <p:commandButton value="Salvar" icon="pi pi-check"
+                             action="#{bibliotecaBean.salvarEmprestimo}"
+                             update=":formEmprestimos"
+                             oncomplete="PF('dlgEmprestimo').hide()"
+                             styleClass="p-button-success"
+                             style="margin-right:8px;"/>
+            <p:commandButton value="Cancelar" icon="pi pi-times"
+                             onclick="PF('dlgEmprestimo').hide(); return false;"
+                             type="button"
+                             styleClass="p-button-secondary"/>
+        </div>
+    </h:form>
+</p:dialog>
+
+        <div style="text-align:center;">
+            <h:link value="← Voltar para o Dashboard"
+                    outcome="index.xhtml"
+                    styleClass="voltar-btn"/>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

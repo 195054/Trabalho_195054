@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="title">Autores</ui:define>
+
+    <ui:define name="content">
+        <style>
+            /* ---------- CABEÇALHO ---------- */
+            .titulo-pagina {
+                text-align: center;
+                color: #2e308d;
+                font-size: 2rem;
+                font-weight: 700;
+                margin-bottom: 35px;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+                letter-spacing: 0.5px;
+            }
+
+            /* ---------- CARDS ---------- */
+            .painel-topo {
+                display: flex;
+                justify-content: center;
+                gap: 25px;
+                flex-wrap: wrap;
+                margin-bottom: 40px;
+            }
+
+            .card {
+                background: linear-gradient(135deg, #2e308d, #3b41c5);
+                color: white;
+                padding: 25px;
+                border-radius: 18px;
+                width: 260px;
+                text-align: center;
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+                transition: all 0.25s ease;
+            }
+
+            .card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+            }
+
+            .card h3 {
+                font-size: 1rem;
+                font-weight: 500;
+                margin: 0;
+                opacity: 0.9;
+            }
+
+            .card h2 {
+                margin-top: 10px;
+                font-size: 2rem;
+                font-weight: bold;
+            }
+
+            /* ---------- TABELA ---------- */
+            .tabela-autores {
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+                font-size: 0.95rem;
+            }
+
+            .tabela-autores .ui-column-title {
+                font-weight: 600;
+                color: #2e308d;
+            }
+
+            .p-datatable-header {
+                background-color: #f6f7fb;
+                border: none;
+            }
+
+            /* ---------- BOTÕES ---------- */
+            .p-button {
+                border-radius: 10px !important;
+                font-weight: 600 !important;
+                padding: 0.6rem 1.4rem !important;
+                transition: all 0.2s ease-in-out !important;
+            }
+
+            .p-button-success {
+                background: linear-gradient(90deg, #2ecc71, #27ae60) !important;
+                border: none !important;
+            }
+
+            .p-button-success:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+            }
+
+            .p-button-info {
+                background: linear-gradient(90deg, #3a86ff, #2e308d) !important;
+                border: none !important;
+            }
+
+            .p-button-danger {
+                background: linear-gradient(90deg, #ff6b6b, #c0392b) !important;
+                border: none !important;
+            }
+
+            /* ---------- MODAL ---------- */
+            .ui-dialog {
+                border-radius: 18px !important;
+                overflow: hidden !important;
+            }
+
+            .ui-dialog-titlebar {
+                background: linear-gradient(90deg, #2e308d, #3b41c5) !important;
+                color: white !important;
+                font-weight: bold;
+                font-size: 1.2rem;
+                text-align: center;
+                border: none !important;
+            }
+
+            .ui-dialog-content {
+                padding: 25px !important;
+            }
+
+            .ui-dialog-footer {
+                border-top: 1px solid #e0e0e0 !important;
+                padding: 15px !important;
+                text-align: right !important;
+            }
+
+            /* ---------- CAMPOS ---------- */
+            .ui-inputfield, textarea {
+                border-radius: 10px !important;
+                border: 1px solid #ccc !important;
+                padding: 8px 10px !important;
+                width: 100% !important;
+                transition: border 0.2s;
+            }
+
+            .ui-inputfield:focus, textarea:focus {
+                border-color: #3b41c5 !important;
+                box-shadow: 0 0 4px rgba(59,65,197,0.3);
+            }
+
+            /* ---------- BOTÃO VOLTAR ---------- */
+            .voltar-btn {
+                display: inline-block;
+                color: #2e308d;
+                font-weight: 600;
+                text-decoration: none;
+                margin-top: 35px;
+                transition: 0.2s;
+            }
+
+            .voltar-btn:hover {
+                color: #3b41c5;
+                text-decoration: underline;
+            }
+
+            /* ---------- RESPONSIVO ---------- */
+            @media (max-width: 768px) {
+                .painel-topo {
+                    flex-direction: column;
+                    align-items: center;
+                }
+                .card {
+                    width: 80%;
+                }
+            }
+        </style>
+
+        <h2 class="titulo-pagina">👤 Autores Cadastrados</h2>
+
+        <div class="painel-topo">
+            <div class="card"><h3>Total de Autores</h3><h2>#{bibliotecaBean.totalAutores}</h2></div>
+            <div class="card"><h3>Total de Livros</h3><h2>#{bibliotecaBean.totalLivros}</h2></div>
+        </div>
+
+        <h:form id="formAutores">
+            <div style="text-align:right; margin-bottom:15px;">
+                
+<p:commandButton value="Novo Autor" icon="pi pi-user-plus"
+                 actionListener="#{bibliotecaBean.novoAutorDialog}"
+                 oncomplete="PF('dlgAutor').show()"
+                 styleClass="p-button-success"
+                 rendered="#{bibliotecaBean.admin}"/>
+            </div>
+
+            <p:dataTable id="tabelaAutores"
+                         value="#{bibliotecaBean.autores}"
+                         var="a"
+                         paginator="true"
+                         rows="5"
+                         rowsPerPageTemplate="5,10,20"
+                         paginatorPosition="bottom"
+                         styleClass="tabela-autores"
+                         stripedRows="true"
+                         rowHover="true"
+                         responsiveLayout="scroll"
+                         emptyMessage="Nenhum autor encontrado.">
+
+                <p:column headerText="Nome" sortBy="#{a.nome}">
+                    <h:outputText value="#{a.nome}" />
+                </p:column>
+
+                <p:column headerText="Email" sortBy="#{a.email}">
+                    <h:outputText value="#{a.email}" />
+                </p:column>
+
+                <p:column headerText="Data de Nascimento" sortBy="#{a.dataNascimento}">
+                    <h:outputText value="#{a.dataNascimento}" />
+                </p:column>
+
+                <p:column headerText="Livros Publicados">
+                    <h:outputText value="#{a.livros.size()}" />
+                </p:column>
+
+                <p:column headerText="Ações" style="width:140px;" rendered="#{bibliotecaBean.admin}">
+                    <p:commandButton icon="pi pi-pencil" title="Editar"
+                                     actionListener="#{bibliotecaBean.editarAutor(a)}"
+                                     update="dlgAutorForm"
+                                     oncomplete="PF('dlgAutor').show()"
+                                     styleClass="p-button-rounded p-button-info p-mr-2"/>
+                    <p:commandButton icon="pi pi-trash" title="Excluir"
+                                     actionListener="#{bibliotecaBean.excluirAutor(a.id)}"
+                                     update="tabelaAutores"
+                                     styleClass="p-button-rounded p-button-danger"
+                                     onclick="return confirm('Tem certeza que deseja excluir este autor?')"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <!-- MODAL -->
+        
+<p:dialog header="Cadastro de Autor" widgetVar="dlgAutor" modal="true" width="420">
+    <h:form id="dlgAutorForm">
+        <p:messages id="msgAutor" autoUpdate="true" closable="true"/>
+
+        <h:panelGrid columns="2" cellpadding="8" style="width:100%;">
+            <h:outputLabel value="Nome:" for="nomeAutor"/>
+            <p:inputText id="nomeAutor"
+                         value="#{bibliotecaBean.novoAutor.nome}"
+                         required="true"
+                         placeholder="Ex: Clarice Lispector" />
+
+            <h:outputLabel value="Email:" for="emailAutor"/>
+            <p:inputText id="emailAutor"
+                         value="#{bibliotecaBean.novoAutor.email}"
+                         placeholder="autor@email.com"/>
+
+            <h:outputLabel value="Biografia:" for="bioAutor"/>
+            <p:inputTextarea id="bioAutor"
+                             value="#{bibliotecaBean.novoAutor.biografia}"
+                             rows="3" cols="25"
+                             placeholder="Resumo do autor..."/>
+        </h:panelGrid>
+
+        <div style="text-align:right; padding-top:10px;">
+            <p:commandButton value="Salvar" icon="pi pi-check"
+                             action="#{bibliotecaBean.salvarAutor}"
+                             update=":formAutores"
+                             styleClass="p-button-success"
+                             style="margin-right:8px;"/>
+            <p:commandButton value="Cancelar" icon="pi pi-times"
+                             onclick="PF('dlgAutor').hide(); return false;"
+                             type="button"
+                             styleClass="p-button-secondary"/>
+        </div>
+    </h:form>
+</p:dialog>
+
+        <div style="text-align:center;">
+            <h:link value="← Voltar para o Dashboard" outcome="index.xhtml" styleClass="voltar-btn"/>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

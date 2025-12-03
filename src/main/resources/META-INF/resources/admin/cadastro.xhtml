@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/template.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{bibliotecaBean.verificarAcessoAdmin}" />
+    </f:metadata>
+    
+    <ui:define name="title">Cadastro de Livros</ui:define>
+
+    <ui:define name="content">
+        <h2 style="color:#2e308d; margin-bottom:20px;">Cadastro de Livros (Área ADMIN)</h2>
+
+        <h:form id="formCadastroLivro">
+            <p:messages autoUpdate="true" closable="true"/>
+
+            <h:panelGrid columns="2" columnClasses="label,value" cellpadding="6">
+                <h:outputLabel for="tituloLivro" value="Título:"/>
+                <p:inputText id="tituloLivro" value="#{bibliotecaBean.novoLivro.titulo}"
+                             required="true" requiredMessage="Informe o título do livro."
+                             style="width:100%;"/>
+
+                <h:outputLabel for="autorLivro" value="Autor:"/>
+                <p:selectOneMenu id="autorLivro" value="#{bibliotecaBean.idAutorSelecionado}" style="width:100%;"
+                                 required="true" requiredMessage="Selecione um autor.">
+                    <f:selectItem itemLabel="Selecione um autor" itemValue="#{null}" noSelectionOption="true"/>
+                    <f:selectItems value="#{bibliotecaBean.autores}" var="a" itemLabel="#{a.nome}" itemValue="#{a.id}"/>
+                </p:selectOneMenu>
+
+                <h:outputLabel for="isbnLivro" value="ISBN:"/>
+                <p:inputText id="isbnLivro" value="#{bibliotecaBean.novoLivro.isbn}" style="width:100%;"/>
+
+                <h:outputLabel for="paginasLivro" value="Nº Páginas:"/>
+                <p:inputText id="paginasLivro" value="#{bibliotecaBean.novoLivro.numeroPaginas}" style="width:100%;"/>
+            </h:panelGrid>
+
+            <div style="margin-top:20px;">
+                <p:commandButton value="Salvar" icon="pi pi-save"
+                                 actionListener="#{bibliotecaBean.salvarLivro}"
+                                 update="@form"
+                                 styleClass="p-button-success"/>
+                <p:commandButton value="Limpar" type="reset" styleClass="p-button-secondary" style="margin-left:10px;"/>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

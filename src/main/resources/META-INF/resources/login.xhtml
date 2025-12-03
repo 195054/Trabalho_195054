@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>Login - Biblioteca Digital</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #2e308d, #6c63ff);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .login-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 30px 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 420px;
+        }
+        .login-card h2 {
+            margin-top: 0;
+            text-align: center;
+            color: #2e308d;
+        }
+        .login-card label {
+            display: block;
+            font-weight: 600;
+            margin: 10px 0 4px;
+        }
+        .login-card input[type="text"],
+        .login-card input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        .login-card button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            background-color: #2e308d;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .login-card button:hover {
+            background-color: #3b41c5;
+        }
+        .error {
+            color: #c0392b;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .hint {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="login-card">
+        <h2>Autenticação</h2>
+
+        <h:panelGroup rendered="#{not empty param['error']}">
+            <div class="error">Usuário ou senha inválidos. Tente novamente.</div>
+        </h:panelGroup>
+
+        <form method="post" action="j_security_check">
+            <label for="j_username">Usuário</label>
+            <input id="j_username" name="j_username" type="text" />
+
+            <label for="j_password">Senha</label>
+            <input id="j_password" name="j_password" type="password" />
+
+            <button type="submit">Entrar</button>
+        </form>
+
+    </div>
+</h:body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="title">Livros</ui:define>
+
+    <ui:define name="content">
+        <style>
+            /* ---------- TÍTULO ---------- */
+            .titulo-pagina {
+                text-align: center;
+                color: #2e308d;
+                font-size: 2rem;
+                font-weight: 700;
+                margin-bottom: 30px;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+            }
+
+            /* ---------- CARDS ---------- */
+            .painel-topo {
+                display: flex;
+                justify-content: center;
+                gap: 30px;
+                flex-wrap: wrap;
+                margin-bottom: 40px;
+            }
+
+            .card {
+                background: linear-gradient(160deg, #2e308d, #3b41c5);
+                color: white;
+                padding: 25px;
+                border-radius: 16px;
+                width: 260px;
+                text-align: center;
+                box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+            }
+
+            .card h3 {
+                margin: 0;
+                font-size: 1.05rem;
+                font-weight: 500;
+                opacity: 0.9;
+            }
+
+            .card h2 {
+                margin-top: 8px;
+                font-size: 2rem;
+                font-weight: 700;
+            }
+
+            /* ---------- TABELA ---------- */
+            .tabela-livros {
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+                font-size: 0.95rem;
+            }
+
+            /* Status visual para disponibilidade */
+            .disponivel {
+                color: #2ecc71;
+                font-weight: 600;
+            }
+
+            .indisponivel {
+                color: #e74c3c;
+                font-weight: 600;
+            }
+
+            /* ---------- BOTÃO VOLTAR ---------- */
+            .voltar-btn {
+                display: inline-block;
+                color: #2e308d;
+                font-weight: 600;
+                text-decoration: none;
+                margin-top: 30px;
+                transition: 0.2s;
+            }
+
+            .voltar-btn:hover {
+                color: #3b41c5;
+                text-decoration: underline;
+            }
+
+            /* ---------- RESPONSIVIDADE ---------- */
+            @media (max-width: 768px) {
+                .painel-topo {
+                    flex-direction: column;
+                    align-items: center;
+                }
+                .card {
+                    width: 80%;
+                }
+            }
+        </style>
+
+        <h2 class="titulo-pagina">📘 Livros Cadastrados</h2>
+
+        <div class="painel-topo">
+            <div class="card">
+                <h3>Total de Livros</h3>
+                <h2>#{bibliotecaBean.totalLivros}</h2>
+            </div>
+            <div class="card">
+                <h3>Livros Disponíveis</h3>
+                <h2>#{bibliotecaBean.livrosDisponiveis}</h2>
+            </div>
+        </div>
+
+        <h:form id="formLivros">
+            <div style="text-align:right; margin-bottom:15px;">
+                
+<p:commandButton value="Novo Livro" icon="pi pi-plus"
+                 actionListener="#{bibliotecaBean.novoLivroDialog}"
+                 oncomplete="PF('dlgLivro').show()"
+                 styleClass="p-button-success"
+                 rendered="#{bibliotecaBean.admin}"/>
+            </div>
+
+            <p:dataTable id="tabelaLivros"
+                         value="#{bibliotecaBean.livros}"
+                         var="l"
+                         paginator="true"
+                         rows="5"
+                         rowsPerPageTemplate="5,10,20"
+                         paginatorPosition="bottom"
+                         styleClass="tabela-livros"
+                         stripedRows="true"
+                         resizableColumns="true"
+                         rowHover="true"
+                         responsiveLayout="scroll"
+                         emptyMessage="Nenhum livro encontrado.">
+
+                <p:column headerText="Título" sortBy="#{l.titulo}">
+                    <h:outputText value="#{l.titulo}" />
+                </p:column>
+
+                <p:column headerText="Autor" sortBy="#{l.autor.nome}">
+                    <h:outputText value="#{l.autor.nome}" />
+                </p:column>
+
+                <p:column headerText="ISBN" sortBy="#{l.isbn}">
+                    <h:outputText value="#{l.isbn}" />
+                </p:column>
+
+                <p:column headerText="Páginas" sortBy="#{l.numeroPaginas}">
+                    <h:outputText value="#{l.numeroPaginas}" />
+                </p:column>
+
+                <p:column headerText="Disponível" sortBy="#{l.disponivel}">
+                    <h:outputText value="#{l.disponivel ? 'Sim' : 'Não'}"
+                                  styleClass="#{l.disponivel ? 'disponivel' : 'indisponivel'}" />
+                </p:column>
+
+                <p:column headerText="Ações" style="width:180px;">
+    <p:commandButton icon="pi pi-pencil" title="Editar"
+                     rendered="#{bibliotecaBean.admin}"
+                     actionListener="#{bibliotecaBean.editarLivro(l)}"
+                     update="dlgLivroForm"
+                     oncomplete="PF('dlgLivro').show()"
+                     styleClass="p-button-rounded p-button-info p-mr-2"/>
+
+    <p:commandButton icon="pi pi-trash" title="Excluir"
+                     rendered="#{bibliotecaBean.admin}"
+                     actionListener="#{bibliotecaBean.excluirLivro(l.id)}"
+                     update="tabelaLivros"
+                     styleClass="p-button-rounded p-button-danger p-mr-2"
+                     onclick="return confirm('Tem certeza que deseja excluir este livro?')"/>
+
+    <p:commandButton value="Solicitar empréstimo" icon="pi pi-shopping-cart"
+                     rendered="#{bibliotecaBean.user and l.disponivel}"
+                     actionListener="#{bibliotecaBean.emprestarLivro(l)}"
+                     update="tabelaLivros"
+                     styleClass="p-button-rounded p-button-success"/>
+</p:column>
+            </p:dataTable>
+        </h:form>
+
+        <!-- MODAL -->
+        
+
+<p:dialog header="Cadastro de Livro" widgetVar="dlgLivro" modal="true" width="480"
+          closable="true" resizable="false" style="border-radius:12px;">
+    <h:form id="dlgLivroForm">
+        <p:messages id="msgLivro" autoUpdate="true" closable="true"/>
+
+        <h:panelGrid columns="2" cellpadding="6" style="width:100%;">
+            <h:outputLabel for="tituloLivro" value="Título:"/>
+            <p:inputText id="tituloLivro"
+                         value="#{bibliotecaBean.novoLivro.titulo}"
+                         required="true"
+                         requiredMessage="Informe o título do livro."
+                         style="width:100%;"/>
+
+            <h:outputLabel for="autorLivro" value="Autor:"/>
+            <p:selectOneMenu id="autorLivro"
+                             value="#{bibliotecaBean.idAutorSelecionado}"
+                             style="width:100%;"
+                             required="true"
+                             requiredMessage="Selecione um autor.">
+                <f:selectItem itemLabel="Selecione um autor" itemValue="#{null}" noSelectionOption="true"/>
+                <f:selectItems value="#{bibliotecaBean.autores}" var="a"
+                               itemLabel="#{a.nome}" itemValue="#{a.id}"/>
+            </p:selectOneMenu>
+
+            <h:outputLabel for="isbnLivro" value="ISBN:"/>
+            <p:inputText id="isbnLivro"
+                         value="#{bibliotecaBean.novoLivro.isbn}"
+                         style="width:100%;"/>
+
+            <h:outputLabel for="paginasLivro" value="Nº Páginas:"/>
+            <p:inputText id="paginasLivro"
+                         value="#{bibliotecaBean.novoLivro.numeroPaginas}"
+                         style="width:100%;"/>
+
+            <h:outputLabel for="disponivelLivro" value="Disponível:"/>
+            <p:selectBooleanCheckbox id="disponivelLivro"
+                                     value="#{bibliotecaBean.novoLivro.disponivel}"/>
+        </h:panelGrid>
+
+        <div style="text-align:right; padding-top:10px;">
+            <p:commandButton value="Salvar" icon="pi pi-check"
+                             actionListener="#{bibliotecaBean.salvarLivro}"
+                             update=":formLivros"
+                             oncomplete="PF('dlgLivro').hide()"
+                             styleClass="p-button-success"
+                             style="margin-right:8px;"/>
+            <p:commandButton value="Cancelar" icon="pi pi-times"
+                             onclick="PF('dlgLivro').hide(); return false;"
+                             styleClass="p-button-secondary"
+                             type="button"/>
+        </div>
+    </h:form>
+</p:dialog>
+
+        <div style="text-align:center;">
+            <h:link value="← Voltar para o Dashboard"
+                    outcome="index.xhtml"
+                    styleClass="voltar-btn"/>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>
